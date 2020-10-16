@@ -16,12 +16,12 @@ class QLearningAgent():
     # Players turn
     turn = False
     # Stores all the states and associated q values
-    states = {}
+    q_values = {}
     # Stores the history of all moves in the current board
     history = []
 
     # Constructor
-    def __init__(self, name, marker, epsilon=0.2, alpha=0.9, gamma=1, default_q=0):
+    def __init__(self, name, marker, epsilon=0.2, alpha=0.9, gamma=0.95, default_q=0):
         self.name = name
         self.marker = marker
         self.epsilon = float(epsilon)
@@ -71,7 +71,7 @@ class QLearningAgent():
                 # In the copy of the board, have the agent play the move at the current available location
                 board_copy[available_move] = self.get_marker()
                 # Get the hash of the board, ex: hash(xxo-----x)
-                existing_board = self.states.get(self.compute_hash(board_copy))
+                existing_board = self.q_values.get(self.compute_hash(board_copy))
 
                 # Check if the q value exists for this board
                 if existing_board:
@@ -106,12 +106,12 @@ class QLearningAgent():
         # Loop through the current board history backwards (last entry is winning/loosing move)
         for state in reversed(self.history):
             # Set q value to 0 if state doesn't already exist
-            if self.states.get(state) is None:
-                self.states[state] = 0
+            if self.q_values.get(state) is None:
+                self.q_values[state] = 0
             # Calculate q
-            self.states[state] += self.alpha * (self.gamma * reward - self.states[state])
+            self.q_values[state] += self.alpha * (self.gamma * reward - self.q_values[state])
             # update current reward, next one should be lower as it's not the final move
-            reward = self.states[state]
+            reward = self.q_values[state]
 
     # get the agent's name
     def get_name(self):
@@ -138,5 +138,5 @@ class QLearningAgent():
         return  self.turn
 
     # get the q-values for all the states
-    def get_states(self):
-        return  self.states
+    def get_q_values(self):
+        return  self.q_values

@@ -4,6 +4,7 @@ from board import Board
 import random
 import matplotlib.pyplot as plt
 import pprint
+
 def main():
 
     # Player 1 will be a Q Learning Agent
@@ -100,7 +101,7 @@ def main():
     # Print the full q values for each state
     pp = pprint.PrettyPrinter(indent=4)
     print("\nAgent learned q-values:")
-    pp.pprint(player_1.get_states())
+    pp.pprint(player_1.get_q_values())
 
     # Print win percentages
     total_wins = q_agent_wins + random_player_wins + ties
