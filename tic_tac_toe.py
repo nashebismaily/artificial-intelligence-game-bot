@@ -25,7 +25,7 @@ def main():
     num_games_percentages= []
 
     # Set the number of games for the q agent to learn to 50000
-    number_games = 50000
+    number_games = 50001
 
     # Loop through selected number of games for training
     for i in range(number_games):
