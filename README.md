@@ -1,7 +1,6 @@
-# reinforcement-learning-tic-tac-toe
-Q Learning Agent trained to play tic-tac-toe
+# artificial intelligence game bot
+Q Learning based AI trained to defeat humans in common games
 
-# Instructions
+## Tic Tac Toe
 pip3 install -r requirements.txt
-
 python3 tic_tac_toe.py 
