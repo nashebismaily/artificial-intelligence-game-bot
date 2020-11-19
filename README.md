@@ -1,4 +1,4 @@
-# Artificial Intelligence Game Bot
+# Artificial Intelligence Game Bots
 These projects contain Q Learning based AI trained to defeat humans in common games
 
 ## Tic Tac Toe
