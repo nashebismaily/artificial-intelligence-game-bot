@@ -6,7 +6,6 @@ import random
 import math
 from tkinter import simpledialog
 
-
 def train(ai, board,response):
 
     # Player 1 will be a Q Learning Agent
@@ -148,7 +147,7 @@ player = 'X'
 def main_gameflow1(r,c):
     global player
     if board[r][c]['text'] == '' and check_win() == -1:
-
+        # Human move
         board[r][c].config(text='X')
         ai_board.play_move(3 * r + c, "X")
         if check_win() == -1:
@@ -159,7 +158,7 @@ def main_gameflow1(r,c):
         elif check_win() == 0:
             label_1.config(text="Draw!")
             return
-
+        # AI Move
         ai_move,q_value = aiplay(3 * r + c)
         c = ai_move % 3
         r = math.floor(ai_move / 3)
@@ -169,7 +168,6 @@ def main_gameflow1(r,c):
             player = 'X'
         elif check_win() == 1:
             ai_board.set_game_over(True)
-            #label_1.config(fg="blue")
             label_1.config(text=("AI Wins!"))
         elif check_win() == 0:
             ai_board.set_game_over(True)
@@ -189,26 +187,26 @@ def refresh():
     ai.reset_history()
     ai_board.reset_board()
 
-
-
-
+# Create AI Agent
 ai = QLearningAgent("AI", "O")
 ai_board = Board()
 
+# Create Game Board
+board=[[0,0,0],[0,0,0],[0,0,0]]
+
+# Create UI
 window_1=tk.Tk()
 window_1.title('Tic Tac Toe')
-
-board=[[0,0,0],[0,0,0],[0,0,0]]
 for i in range(3):
     for j in range(3):
         board[i][j]=tk.Button(text='',font=('normal',60,'normal'),width=5,height=3,command=lambda r=i,c=j: main_gameflow1(r,c))
         board[i][j].grid(row=i,column=j)
 label_1=tk.Label(text="",font=('normal',22,'bold'))
 label_1.grid(row=3,column=1)
-
 button_1=tk.Button(text='restart',font=('Courier',18,'normal'),fg='red',command=refresh)
 button_1.grid(row=4,column=1)
 
+# Train AI
 response = simpledialog.askstring("Input", "How many games would you like the AI to train on?")
 train(ai,ai_board,response)
 print(ai.get_q_values())

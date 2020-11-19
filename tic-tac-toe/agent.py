@@ -63,21 +63,16 @@ class QLearningAgent():
         best_move = available_moves[0]
         # Loop through all available moves
         for available_move in available_moves:
-            #print("current move {}".format(available_move))
-
             # Make a deep copy of the board, with actual values instead of references
             board_copy = copy.deepcopy(board)
             # In the copy of the board, have the agent play the move at the current available location
             board_copy[available_move] = self.get_marker()
             # Get the hash of the board, ex: hash(xxo-----x)
             existing_board = self.q_values.get(self.compute_hash(board_copy))
-            #print(self.q_values)
-            #print("hash: {}".format(self.compute_hash(board_copy)))
-            #print("existing board {}".format(existing_board))
+
             # Check if the q value exists for this board
             if existing_board:
                 value = existing_board
-                #print("q_value {}".format(value))
             # Set q value to 0
             else:
                 value = 0
@@ -86,8 +81,6 @@ class QLearningAgent():
             if value > max_value:
                 max_value = value
                 best_move = available_move
-
-            #print("current best move {}".format(best_move))
 
         return best_move, value
 
