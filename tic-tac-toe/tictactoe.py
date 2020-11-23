@@ -4,7 +4,9 @@ from player import RandomPlayer
 from board import Board
 import random
 import math
-from tkinter import simpledialog
+from tkinter import simpledialog, Toplevel, Label
+import json
+
 
 def train(ai, board,response):
 
@@ -107,6 +109,11 @@ def train(ai, board,response):
 
     print("Training Complete!")
 
+ #   with open('pre_trained_ttt_agent.json', 'w') as fp:
+ #       dict ={}
+ #       dict = ai.get_q_values()
+ #       json.dump(dict, fp)
+
 def available_spots():
     h=[]
     for i in range(3):
@@ -187,10 +194,36 @@ def refresh():
     ai.reset_history()
     ai_board.reset_board()
 
-# Create AI Agent
+def train_ai_window():
+    # Train AI
+    ai.reset_history()
+    refresh()
+    response = simpledialog.askstring("Input", "How many games would you like the AI to train on?")
+    train(ai,ai_board,response)
+    print(ai.get_q_values())
+
+
+def pre_trained_ai():
+    print("here")
+    ai.reset_history()
+    refresh()
+    ai.set_q_values(q_file)
+    print(ai.get_q_values())
+
+
+def show_ai_brain():
+
+    window_2 = Toplevel(window_1)
+    window_2.title("AI Brain")
+    window_2.geometry("500x500")
+    Label(window_2, text=json.dumps(ai.get_q_values(), indent=2)).pack()
+
+
+    # Create AI Agent
 ai = QLearningAgent("AI", "O")
 ai_board = Board()
-
+q_file= 'pre_trained_ttt_agent.json'
+#window_2 = None
 # Create Game Board
 board=[[0,0,0],[0,0,0],[0,0,0]]
 
@@ -203,12 +236,18 @@ for i in range(3):
         board[i][j].grid(row=i,column=j)
 label_1=tk.Label(text="",font=('normal',22,'bold'))
 label_1.grid(row=3,column=1)
-button_1=tk.Button(text='restart',font=('Courier',18,'normal'),fg='red',command=refresh)
+button_1=tk.Button(text='Restart',font=('Courier',18,'normal'),fg='red',command=refresh)
 button_1.grid(row=4,column=1)
+button_1=tk.Button(text='Retrain AI',font=('Courier',18,'normal'),fg='blue',command=train_ai_window)
+button_1.grid(row=6,column=1)
+button_1=tk.Button(text='Use Pre-trained AI',font=('Courier',18,'normal'),fg='green',command=pre_trained_ai)
+button_1.grid(row=7,column=1)
+button_1=tk.Button(text='Show AI Brain',font=('Courier',18,'normal'),fg='orange',command=show_ai_brain)
+button_1.grid(row=8,column=1)
 
-# Train AI
-response = simpledialog.askstring("Input", "How many games would you like the AI to train on?")
-train(ai,ai_board,response)
-print(ai.get_q_values())
+
+
+
+train_ai_window()
 
 window_1.mainloop()

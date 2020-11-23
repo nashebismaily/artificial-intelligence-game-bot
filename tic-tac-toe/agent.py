@@ -1,5 +1,7 @@
 import random
 import copy
+import json
+
 
 class QLearningAgent():
 
@@ -172,3 +174,8 @@ class QLearningAgent():
     # get the q-values for all the states
     def get_q_values(self):
         return  self.q_values
+
+    # get the q-values for all the states
+    def set_q_values(self,q_file):
+        with open(q_file) as json_file:
+            self.q_values = json.load(json_file)
