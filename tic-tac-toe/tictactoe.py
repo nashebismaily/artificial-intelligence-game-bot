@@ -91,7 +91,7 @@ def train(ai, board,response):
 
         if (i % 1000 == 0 and i != 0):
             print("AI Finished Playing {} games...".format(i))
-        elif i == int(response)-1:
+        elif i == number_games-1:
             print("AI Finished Playing {} games...".format(response))
 
         # Store win percentages for every 100 games
