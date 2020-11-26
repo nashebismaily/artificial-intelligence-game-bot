@@ -4,9 +4,8 @@ from player import RandomPlayer
 from board import Board
 import random
 import math
-from tkinter import simpledialog, Toplevel, Label
-import json
-
+from tkinter import *
+from tkinter import  simpledialog
 
 def train(ai, board,response):
 
@@ -50,7 +49,7 @@ def train(ai, board,response):
                 # Get available moves
                 available_moves = board.get_available_moves()
                 # Select a move based on q-values and epsilon
-                move = player_1.select_move(available_moves,board.get_board_copy())
+                move, value = player_1.select_move(available_moves,board.get_board_copy())
                 # Add selected move to the board
                 board.play_move(move, "O")
                 # Check if game is over
@@ -109,11 +108,6 @@ def train(ai, board,response):
 
     print("Training Complete!")
 
- #   with open('pre_trained_ttt_agent.json', 'w') as fp:
- #       dict ={}
- #       dict = ai.get_q_values()
- #       json.dump(dict, fp)
-
 def available_spots():
     h=[]
     for i in range(3):
@@ -161,10 +155,13 @@ def main_gameflow1(r,c):
             player = 'O'
         elif check_win() == 1:
             label_1.config(text=("Human Wins!"))
+            ai.reward_player(-1)
             return
         elif check_win() == 0:
             label_1.config(text="Draw!")
+            ai.reward_player(0.5)
             return
+
         # AI Move
         ai_move,q_value = aiplay(3 * r + c)
         c = ai_move % 3
@@ -176,13 +173,15 @@ def main_gameflow1(r,c):
         elif check_win() == 1:
             ai_board.set_game_over(True)
             label_1.config(text=("AI Wins!"))
+            ai.reward_player(1)
         elif check_win() == 0:
             ai_board.set_game_over(True)
             label_1.config(text="Draw!")
+            ai.reward_player(0.5)
 
 def aiplay(position):
     available_moves = ai_board.get_available_moves()
-    move, q_value = ai.exploit_move(available_moves, ai_board.get_board_copy())
+    move, q_value = ai.select_move(available_moves, ai_board.get_board_copy())
     return move, q_value
 
 def refresh():
@@ -191,39 +190,44 @@ def refresh():
             board[i][j]['text']=''
             board[i][j].config(fg='black')
     label_1.config(text=(""))
+
     ai.reset_history()
     ai_board.reset_board()
 
 def train_ai_window():
-    # Train AI
     ai.reset_history()
+    ai.reset_q_values()
     refresh()
     response = simpledialog.askstring("Input", "How many games would you like the AI to train on?")
     train(ai,ai_board,response)
     print(ai.get_q_values())
 
-
 def pre_trained_ai():
-    print("here")
     ai.reset_history()
     refresh()
     ai.set_q_values(q_file)
     print(ai.get_q_values())
 
-
 def show_ai_brain():
-
     window_2 = Toplevel(window_1)
     window_2.title("AI Brain")
-    window_2.geometry("500x500")
-    Label(window_2, text=json.dumps(ai.get_q_values(), indent=2)).pack()
+    S = tk.Scrollbar(window_2)
+    T = tk.Text(window_2, height=50, width=50)
+    S.pack(side=tk.RIGHT, fill=tk.Y)
+    T.pack(side=tk.LEFT, fill=tk.Y)
+    S.config(command=T.yview)
+    T.config(yscrollcommand=S.set)
+    quote = str(ai.get_q_values())
+    T.insert(tk.END, quote)
 
-
-    # Create AI Agent
+# Create AI Agent
 ai = QLearningAgent("AI", "O")
 ai_board = Board()
+
+# Set AI Exploration to 0.1
+ai.set_epsilon(0.1)
 q_file= 'pre_trained_ttt_agent.json'
-#window_2 = None
+
 # Create Game Board
 board=[[0,0,0],[0,0,0],[0,0,0]]
 
@@ -245,9 +249,8 @@ button_1.grid(row=7,column=1)
 button_1=tk.Button(text='Show AI Brain',font=('Courier',18,'normal'),fg='orange',command=show_ai_brain)
 button_1.grid(row=8,column=1)
 
-
-
-
+# Train AI
 train_ai_window()
 
+# Begin Game
 window_1.mainloop()

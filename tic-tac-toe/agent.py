@@ -2,7 +2,6 @@ import random
 import copy
 import json
 
-
 class QLearningAgent():
 
     #Player Name
@@ -54,40 +53,9 @@ class QLearningAgent():
     def set_turn(self, turn):
         self.turn = turn
 
-    def exploit_move(self, available_moves, board):
-
-        existing_board = ''
-        value = 0
-        #print(self.get_q_values())
-        # Set upper bound for value comparison
-        max_value = float("-inf")
-        # Start by selecting first available move as best move
-        best_move = available_moves[0]
-        # Loop through all available moves
-        for available_move in available_moves:
-            # Make a deep copy of the board, with actual values instead of references
-            board_copy = copy.deepcopy(board)
-            # In the copy of the board, have the agent play the move at the current available location
-            board_copy[available_move] = self.get_marker()
-            # Get the hash of the board, ex: hash(xxo-----x)
-            existing_board = self.q_values.get(self.compute_hash(board_copy))
-
-            # Check if the q value exists for this board
-            if existing_board:
-                value = existing_board
-            # Set q value to 0
-            else:
-                value = 0
-
-            # Best move becomes location associated with largest q value
-            if value > max_value:
-                max_value = value
-                best_move = available_move
-
-        return best_move, value
-
     # Select a move based on q learning
     def select_move(self, available_moves, board):
+        value = 0
         # Agent decides to explore
         probability = random.uniform(0, 1)
         if probability <= self.epsilon:
@@ -125,7 +93,7 @@ class QLearningAgent():
             board_copy[best_move] = self.get_marker()
             self.history.append(self.compute_hash(board_copy))
 
-        return best_move
+        return best_move, value
 
     # Combines the board into a string
     def compute_hash(self, board):
@@ -134,6 +102,10 @@ class QLearningAgent():
     # Reset the agents current board history
     def reset_history(self):
         self.history = []
+
+    # Reset the agents q-values
+    def reset_q_values(self):
+        self.q_values = {}
 
     # Reward the agent
     def reward_player(self, reward):
@@ -174,6 +146,10 @@ class QLearningAgent():
     # get the q-values for all the states
     def get_q_values(self):
         return  self.q_values
+
+    # get the state histories
+    def get_history(self):
+        return self.history
 
     # get the q-values for all the states
     def set_q_values(self,q_file):
