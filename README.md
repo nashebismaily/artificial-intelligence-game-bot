@@ -39,7 +39,7 @@ The AI Agent will continue to learn through gameplay.
     
 4. Play the game by click on one of the 9 squares !
 
-    ![ai_games](tic-tac-toe/resources/images/ai_game_play.png)
+    ![ai_games](tic-tac-toe/resources/images/ai_game.png)
 
 5. Click 'Restart' to paly another game
 
