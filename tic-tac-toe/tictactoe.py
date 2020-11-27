@@ -210,6 +210,7 @@ def restart():
 def train_ai_window():
     ai.reset_history()
     ai.reset_q_values()
+    ai.set_play_first(False)
     reset()
     response = simpledialog.askstring("Input", "How many games would you like the AI to train on?")
     train(ai,ai_board,response)
@@ -217,9 +218,10 @@ def train_ai_window():
 
 def pre_trained_ai():
     ai.reset_history()
-    reset()
+    ai.set_play_first(False)
     ai.set_q_values(q_file)
     ai.set_epsilon(-1)
+    reset()
     print(ai.get_q_values())
 
 def show_ai_brain():
