@@ -146,6 +146,8 @@ def check_win():
         return -1
 
 def main_game_flow(r,c):
+    global ai_wins, human_wins, draws
+
     if board[r][c]['text'] == '' and check_win() == -1:
 
         # Human Move
@@ -155,10 +157,14 @@ def main_game_flow(r,c):
         if check_win() == 1:
             label_1.config(text=("Human Wins!"))
             ai.reward_player(-1)
+            human_wins+=1
+            label_3.config(text=("Human Wins: " + str(human_wins)))
             return
         elif check_win() == 0:
             label_1.config(text="Draw!")
             ai.reward_player(0.5)
+            draws+=1
+            label_4.config(text=("Draws: " + str(draws)))
             return
 
         # AI Move
@@ -172,11 +178,15 @@ def main_game_flow(r,c):
             ai_board.set_game_over(True)
             label_1.config(text=("AI Wins!"))
             ai.reward_player(1)
+            ai_wins+=1
+            label_2.config(text=("AI Wins: " + str(ai_wins)))
             return
         elif check_win() == 0:
             ai_board.set_game_over(True)
             label_1.config(text="Draw!")
             ai.reward_player(0.5)
+            draws+=1
+            label_4.config(text=("Draws: " + str(draws)))
             return
 
 def aiplay():
@@ -194,6 +204,7 @@ def reset():
     ai.reset_history()
     ai_board.reset_board()
 
+
 def restart():
     reset()
 
@@ -207,10 +218,21 @@ def restart():
         board[r][c].config(text='O')
         ai_board.play_move(ai_move, "O")
 
+def clear_stats():
+    global ai_wins,human_wins,draws
+
+    ai_wins =0
+    human_wins = 0
+    draws =0
+    label_2.config(text=("AI Wins: 0"))
+    label_3.config(text=("Human Wins: 0"))
+    label_4.config(text=("Draws: 0"))
+
 def train_ai_window():
     ai.reset_history()
     ai.reset_q_values()
     ai.set_play_first(False)
+    clear_stats()
     reset()
     response = simpledialog.askstring("Input", "How many games would you like the AI to train on?")
     train(ai,ai_board,response)
@@ -221,6 +243,7 @@ def pre_trained_ai():
     ai.set_play_first(False)
     ai.set_q_values(q_file)
     ai.set_epsilon(-1)
+    clear_stats()
     reset()
     print(ai.get_q_values())
 
@@ -235,6 +258,10 @@ def show_ai_brain():
     T.config(yscrollcommand=S.set)
     quote = str(ai.get_q_values())
     T.insert(tk.END, quote)
+
+ai_wins = 0
+human_wins = 0
+draws = 0
 
 # Create AI Agent
 ai = QLearningAgent("AI", "O")
@@ -263,6 +290,12 @@ button_3=tk.Button(text='Use Pre-trained AI',font=('Courier',18,'normal'),fg='gr
 button_3.grid(row=7,column=1)
 button_4=tk.Button(text='Show AI Brain',font=('Courier',18,'normal'),fg='orange',command=show_ai_brain)
 button_4.grid(row=8,column=1)
+label_2=tk.Label(text="AI Wins: 0",font=('normal',15,'bold'))
+label_2.grid(row=10,column=1)
+label_3=tk.Label(text="Human Wins: 0",font=('normal',15,'bold'))
+label_3.grid(row=11,column=1)
+label_4=tk.Label(text="Draws: 0",font=('normal',15,'bold'))
+label_4.grid(row=12,column=1)
 
 # Train AI
 train_ai_window()
