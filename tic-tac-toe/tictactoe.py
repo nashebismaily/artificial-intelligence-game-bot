@@ -40,7 +40,6 @@ def train(ai, board,response):
         else:
             player_2.set_turn(True)
 
-        player_2.set_turn(True)
         # Continue game until a win or a tie
         while(not board.get_game_over()):
 
@@ -92,7 +91,7 @@ def train(ai, board,response):
         if (i % 1000 == 0 and i != 0):
             print("AI Finished Playing {} games...".format(i))
         elif i == number_games-1:
-            print("AI Finished Playing {} games...".format(response))
+            print("AI Finished Playing {} games...".format(number_games))
 
         # Store win percentages for every 100 games
         if i % 100 == 0 and i != 0:
@@ -104,6 +103,8 @@ def train(ai, board,response):
 
         # Reset the board, remove the current state history for the q-agent
         player_1.reset_history()
+        player_1.set_turn(False)
+        player_2.set_turn(False)
         board.reset_board()
 
     print("Training Complete!")
@@ -144,16 +145,14 @@ def check_win():
     else:
         return -1
 
-player = 'X'
-def main_gameflow1(r,c):
-    global player
+def main_game_flow(r,c):
     if board[r][c]['text'] == '' and check_win() == -1:
-        # Human move
+
+        # Human Move
         board[r][c].config(text='X')
         ai_board.play_move(3 * r + c, "X")
-        if check_win() == -1:
-            player = 'O'
-        elif check_win() == 1:
+
+        if check_win() == 1:
             label_1.config(text=("Human Wins!"))
             ai.reward_player(-1)
             return
@@ -163,28 +162,29 @@ def main_gameflow1(r,c):
             return
 
         # AI Move
-        ai_move,q_value = aiplay(3 * r + c)
+        ai_move, q_value = aiplay()
         c = ai_move % 3
         r = math.floor(ai_move / 3)
         board[r][c].config(text='O')
         ai_board.play_move(ai_move, "O")
-        if check_win() == -1:
-            player = 'X'
-        elif check_win() == 1:
+
+        if check_win() == 1:
             ai_board.set_game_over(True)
             label_1.config(text=("AI Wins!"))
             ai.reward_player(1)
+            return
         elif check_win() == 0:
             ai_board.set_game_over(True)
             label_1.config(text="Draw!")
             ai.reward_player(0.5)
+            return
 
-def aiplay(position):
+def aiplay():
     available_moves = ai_board.get_available_moves()
     move, q_value = ai.select_move(available_moves, ai_board.get_board_copy())
     return move, q_value
 
-def refresh():
+def reset():
     for i in range(3):
         for j in range(3):
             board[i][j]['text']=''
@@ -194,18 +194,32 @@ def refresh():
     ai.reset_history()
     ai_board.reset_board()
 
+def restart():
+    reset()
+
+    if ai.get_play_first():
+        ai.set_play_first(False)
+    else:
+        ai.set_play_first(True)
+        ai_move, q_value = aiplay()
+        c = ai_move % 3
+        r = math.floor(ai_move / 3)
+        board[r][c].config(text='O')
+        ai_board.play_move(ai_move, "O")
+
 def train_ai_window():
     ai.reset_history()
     ai.reset_q_values()
-    refresh()
+    reset()
     response = simpledialog.askstring("Input", "How many games would you like the AI to train on?")
     train(ai,ai_board,response)
     print(ai.get_q_values())
 
 def pre_trained_ai():
     ai.reset_history()
-    refresh()
+    reset()
     ai.set_q_values(q_file)
+    ai.set_epsilon(-1)
     print(ai.get_q_values())
 
 def show_ai_brain():
@@ -225,7 +239,6 @@ ai = QLearningAgent("AI", "O")
 ai_board = Board()
 
 # Set AI Exploration to 0.1
-ai.set_epsilon(0.1)
 q_file= 'pre_trained_ttt_agent.json'
 
 # Create Game Board
@@ -236,18 +249,18 @@ window_1=tk.Tk()
 window_1.title('Tic Tac Toe')
 for i in range(3):
     for j in range(3):
-        board[i][j]=tk.Button(text='',font=('normal',60,'normal'),width=5,height=3,command=lambda r=i,c=j: main_gameflow1(r,c))
+        board[i][j]=tk.Button(text='',font=('normal',60,'normal'),width=5,height=3,command=lambda r=i,c=j: main_game_flow(r,c))
         board[i][j].grid(row=i,column=j)
 label_1=tk.Label(text="",font=('normal',22,'bold'))
 label_1.grid(row=3,column=1)
-button_1=tk.Button(text='Restart',font=('Courier',18,'normal'),fg='red',command=refresh)
+button_1=tk.Button(text='Restart',font=('Courier',18,'normal'),fg='red',command=restart)
 button_1.grid(row=4,column=1)
-button_1=tk.Button(text='Retrain AI',font=('Courier',18,'normal'),fg='blue',command=train_ai_window)
-button_1.grid(row=6,column=1)
-button_1=tk.Button(text='Use Pre-trained AI',font=('Courier',18,'normal'),fg='green',command=pre_trained_ai)
-button_1.grid(row=7,column=1)
-button_1=tk.Button(text='Show AI Brain',font=('Courier',18,'normal'),fg='orange',command=show_ai_brain)
-button_1.grid(row=8,column=1)
+button_2=tk.Button(text='Retrain AI',font=('Courier',18,'normal'),fg='blue',command=train_ai_window)
+button_2.grid(row=6,column=1)
+button_3=tk.Button(text='Use Pre-trained AI',font=('Courier',18,'normal'),fg='green',command=pre_trained_ai)
+button_3.grid(row=7,column=1)
+button_4=tk.Button(text='Show AI Brain',font=('Courier',18,'normal'),fg='orange',command=show_ai_brain)
+button_4.grid(row=8,column=1)
 
 # Train AI
 train_ai_window()

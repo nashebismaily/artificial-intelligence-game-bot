@@ -20,6 +20,8 @@ class QLearningAgent():
     q_values = {}
     # Stores the history of all moves in the current board
     history = []
+    # Ai Goes First
+    play_first = False
 
     # Constructor
     def __init__(self, name, marker, epsilon=0.2, alpha=0.9, gamma=0.95, default_q=0):
@@ -155,3 +157,11 @@ class QLearningAgent():
     def set_q_values(self,q_file):
         with open(q_file) as json_file:
             self.q_values = json.load(json_file)
+
+    # get play first status
+    def get_play_first(self):
+        return self.play_first
+
+    # set play first status
+    def set_play_first(self,first):
+        self.play_first = first

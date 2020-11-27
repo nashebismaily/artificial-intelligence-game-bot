@@ -41,13 +41,13 @@ The AI Agent will continue to learn through gameplay.
 
     ![ai_games](tic-tac-toe/resources/images/game.png)
 
-5. Click 'Restart' to paly another game
+5. Click 'Restart' to paly another game. Human and AI switch turns on every restart.
 
 ###  AI Options
 
 * Click 'Retrain AI' to clear agent memory and retrain
-* Click 'Use Pre-Trained AI' to load AI trained on 500,000 games
-* Click 'Show AI Brarin' to view the AI state and q-values
+* Click 'Use Pre-Trained AI' to load AI trained on 1 million games
+* Click 'Show AI Brarin' to view the AI state and q-values (only use for small training values)
 
 ## Authors
 
